@@ -94,13 +94,17 @@ export default function OrbitalCloud() {
     meshRef.current.rotation.z = time * ORBITAL_CONFIG.animation.rotationSpeedZ;
 
     // 2. Automated Mobile Safe Scale Optimization
-    // If the 3D scene viewport width narrows, scale down the box to prevent side clipping
-    const baseScale = 1.0;
-    if (state.viewport.width < 2.6) {
-      const responsiveFactor = state.viewport.width / 2.6;
+    // Read the threshold and target scale from our config
+    const threshold = ORBITAL_CONFIG.graphics.mobileViewportThreshold;
+    const targetScale = ORBITAL_CONFIG.graphics.desktopScale;
+
+    if (state.viewport.width < threshold) {
+      // On mobile, gracefully shrink it down relative to the threshold
+      const responsiveFactor = (state.viewport.width / threshold) * targetScale;
       meshRef.current.scale.setScalar(responsiveFactor);
     } else {
-      meshRef.current.scale.setScalar(baseScale);
+      // On desktop, inflate the mesh to our massive new target scale!
+      meshRef.current.scale.setScalar(targetScale);
     }
 
     // 3. Scroll calculations
